@@ -1,7 +1,8 @@
-import api from './api'
+import api from './api';
 
 export default {
-  userRegisterEmail  : async(data) => api.post('register_email',{
+  userRegisterEmail: async (data) =>
+    api.post('register_email', {
       userName: 'beta',
       keyCode: 'beta12345',
       Name: data.name,
@@ -9,12 +10,15 @@ export default {
       Password: data.password,
       Phone: data.phone,
       Dob: data.dob,
-  }),
-  userRegisterPonsel : async(data) => api.post('register_ponsel',{
-    userName: 'beta',
-    keyCode: 'beta12345',
-    Name: data.userName,
-    Phone: data.user,
-    OTP: data.password
-  }),
-}
+      mitra: 1,
+    }),
+  userRegisterPonsel: async (data) =>
+    api.post('register_ponsel', {
+      userName: 'beta',
+      keyCode: 'beta12345',
+      Name: data.userName,
+      Phone: data.user,
+      OTP: data.password,
+      mitra: 1,
+    }),
+};

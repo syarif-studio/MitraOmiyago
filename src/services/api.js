@@ -2,9 +2,9 @@ import axios from 'axios';
 import querystring from 'qs';
 import config from '../config';
 import AsyncStorage from '@react-native-community/async-storage';
-import {Toast} from 'native-base';
+import { Toast } from 'native-base';
 
-const {BASE_URL} = config;
+const { BASE_URL } = config;
 
 const api = axios.create({
   baseURL: BASE_URL,
