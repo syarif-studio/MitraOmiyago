@@ -25,7 +25,7 @@ import Cart from '../../components/Cart';
 import Address from '../../components/Address';
 import UsePoint from '../../components/UsePoint';
 import { connect } from 'react-redux';
-import { retrieveData } from '../../services/storage';
+import { retrieveData, storeData } from '../../services/storage';
 import * as actionType from '../../store/actions/action-types';
 import { text } from '@fortawesome/fontawesome-svg-core';
 
@@ -46,17 +46,43 @@ const Checkout = (props) => {
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [point, setPoint] = useState(0);
+  const [mitraDiscount, setMitraDiscount] = useState(null);
 
   React.useEffect(() => {
     getUserData();
   }, []);
 
   const getUserData = async () => {
-    const userData = await retrieveData('userData');
+    const userData = await retrieveData('userData').catch((error) =>
+      console.log('error: ', error)
+    );
+    const userDiscount = await retrieveData(
+      `discount-${userData?.userId}`
+    ).then((json) => {
+      if (typeof json === 'string') {
+        return JSON.parse(json);
+      }
+      return json;
+    });
 
     if (userData) {
       const cart = await checkout.getCart(userData.userId);
-      const discount = await mitra.discount(userData.userId);
+      const cartId = cart?.cartId;
+      if (cart && userDiscount?.[cartId] !== cart?.cartSubtotal) {
+        mitra.discount(userData.userId).then(() => {
+          setMitraDiscount(true);
+          const newUserDiscount = userDiscount
+            ? { ...userDiscount, [cartId]: cart?.cartSubtotal }
+            : { [cartId]: cart?.cartSubtotal };
+
+          return storeData(
+            `discount-${userData?.userId}`,
+            JSON.stringify(newUserDiscount)
+          );
+        });
+      } else {
+        setMitraDiscount(true);
+      }
 
       props.fetchCart(cart);
 
@@ -493,7 +519,9 @@ const Checkout = (props) => {
                   }}>
                   <Text style={styles.textSub}>Potongan</Text>
                   <Text style={styles.textSub}>
-                    {cartVoucher.metode === 'percent'
+                    {mitraDiscount
+                      ? '15%'
+                      : cartVoucher.metode === 'percent'
                       ? `${cartVoucher.value}%`
                       : `Rp ${priceFormat(cartVoucher.discount)}`}
                   </Text>
