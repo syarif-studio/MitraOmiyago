@@ -7,7 +7,8 @@ import homeImage from '../assets/img/home.png';
 import promoImage from '../assets/img/promo.png';
 import akunImage from '../assets/img/akun.png';
 import keranjangImage from '../assets/img/icons8-buy-40.png';
-import Home from '../views/HomeAuth';
+import HomeAuth from '../views/HomeAuth';
+import Home from '../views/Home';
 import Promo from '../views/Promo';
 import Keranjang from '../views/Keranjang';
 import SearchBar from '../components/SearchBar';
@@ -164,6 +165,7 @@ const MainRouter = createStackNavigator(
         resetOnBlur: true,
       }
     ),
+    HomeAuth: HomeAuth,
     Detail: ProductDetail,
     Login: Login,
     Daftar: Daftar,
@@ -201,6 +203,7 @@ const MainRouter = createStackNavigator(
     defaultNavigationOptions: {
       header: null,
     },
+    initialRouteName: 'HomeAuth',
   }
 );
 

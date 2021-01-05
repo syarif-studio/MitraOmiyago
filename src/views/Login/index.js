@@ -15,6 +15,7 @@ import {
   StyleSheet,
   StatusBar,
   Alert,
+  Image,
 } from 'react-native';
 import { Form, Item, Input, Label } from 'native-base';
 import { StackActions, NavigationActions } from 'react-navigation';
@@ -209,24 +210,6 @@ class Login extends Component {
   render() {
     return (
       <Container style={{ paddingTop: StatusBar.currentHeight }}>
-        <Header style={{ backgroundColor: '#009975', marginTop: 0 }}>
-          <Left>
-            <Button
-              transparent
-              onPress={() => this.props.navigation.navigate('Home')}>
-              <Icon name="arrow-back" />
-            </Button>
-          </Left>
-          <Body>
-            <Title style={{ marginLeft: -25 }}>Masuk</Title>
-          </Body>
-          <TouchableOpacity
-            onPress={() => this.props.navigation.navigate('Daftar')}>
-            <Right>
-              <Title style={{ marginBottom: 15 }}>Daftar</Title>
-            </Right>
-          </TouchableOpacity>
-        </Header>
         <ScrollView>
           <View style={styles.container}>
             {this.state.isShowNotification ? (
@@ -248,6 +231,13 @@ class Login extends Component {
             ) : (
               <View style={{ margin: 20 }}></View>
             )}
+            <Image
+              style={{ alignSelf: 'center' }}
+              source={require('../../assets/img/icon.png')}
+            />
+            <Text style={{ alignSelf: 'center', fontSize: 20 }}>
+              Mitra Omiyago
+            </Text>
             <Text style={styles.TextInput}>
               {this.state.isEnterPassword
                 ? this.state.isEmail
@@ -269,7 +259,7 @@ class Login extends Component {
               style={styles.ButtonBlock}
               onPress={this.loginHandler}>
               <Text style={styles.TextButton}>
-                {this.state.isEnterPassword ? 'Masuk' : 'Lanjutkan'}
+                {this.state.isEnterPassword ? 'Masuk' : 'Lanjut'}
               </Text>
             </Button>
             {this.state.isEnterPassword ? (
@@ -285,7 +275,7 @@ class Login extends Component {
                   <Button
                     block
                     light
-                    style={{ marginTop: 30, marginRight: 10, marginLeft: 10 }}
+                    style={{ marginTop: 30 }}
                     onPress={() =>
                       this.props.navigation.navigate('ForgotPassword')
                     }>
@@ -294,27 +284,23 @@ class Login extends Component {
                 )}
               </>
             ) : (
-              <>
-                {/*<Text style={{ paddingTop: 25,  fontSize: 14, color: "#212529", textAlign: "center" }} >
-                                    Atau Masuk Dengan
-                                </Text>
-                                 <Button block light style={styles.ButtonGoogle}>
-                                    <Icon active name="logo-google" />
-                                    <Text style={{color:'#212529'}}>Masuk Melalui Google</Text>
-                                </Button> 
-                                <View style={styles.GoogleSignInContainer}>
-                                    <GoogleSigninButton
-                                        style={{ width: 192, height: 48 }}
-                                        size={GoogleSigninButton.Size.Wide}
-                                        color={GoogleSigninButton.Color.Dark}
-                                        onPress={this._signInWithGoogle}
-                                    />
-                                </View>
-                                <Button block light style={styles.ButtonFb}>
-                                <Icon active name="logo-facebook" />
-                                    <Text style={{color:'#212529'}}>Masuk Melalui facebook</Text>
-                                </Button>*/}
-              </>
+              <View
+                style={{
+                  paddingVertical: 24,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                <TouchableOpacity
+                  onPress={() =>
+                    this.props.navigation.navigate('ForgotPassword')
+                  }>
+                  <Text>Lupa Password</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => this.props.navigation.navigate('Daftar')}>
+                  <Text>Daftar</Text>
+                </TouchableOpacity>
+              </View>
             )}
           </View>
         </ScrollView>
@@ -328,27 +314,23 @@ export default Login;
 const styles = StyleSheet.create({
   container: {
     marginBottom: 10,
+    padding: 32,
   },
   ItemInput: {
     marginTop: -10,
-    marginRight: 10,
+    marginLeft: 0,
   },
   TextInput: {
-    paddingTop: 25,
+    paddingTop: 70,
     fontSize: 14,
     color: '#212529',
-    marginLeft: 20,
   },
   ButtonBlock: {
     marginTop: 30,
-    marginLeft: 10,
-    marginRight: 10,
     backgroundColor: '#009975',
   },
   ButtonBlockCancel: {
     marginTop: 30,
-    marginLeft: 10,
-    marginRight: 10,
     backgroundColor: '#D35757',
   },
   TextButton: {

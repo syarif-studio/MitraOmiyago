@@ -9,7 +9,12 @@ import {
   Title,
   Icon,
 } from 'native-base';
-import { ScrollView, TouchableOpacity, ToastAndroid } from 'react-native';
+import {
+  ScrollView,
+  TouchableOpacity,
+  ToastAndroid,
+  Image,
+} from 'react-native';
 import { Form, Item, Input, Label, DatePicker } from 'native-base';
 import { StackActions, NavigationActions } from 'react-navigation';
 import moment from 'moment';
@@ -141,26 +146,26 @@ class Daftar extends Component {
   render() {
     return (
       <Container>
-        <Header style={{ backgroundColor: '#009975', marginTop: 20 }}>
+        <Header style={{ backgroundColor: '#FFF' }}>
           <Left>
             <Button
               transparent
               onPress={() => this.props.navigation.navigate('Login')}>
-              <Icon name="arrow-back" />
+              <Icon style={{ color: '#333' }} name="arrow-back" />
             </Button>
           </Left>
           <Body>
-            <Title style={{ marginLeft: -25 }}>Daftar</Title>
+            <Title style={{ marginLeft: -25, color: '#333' }}>Daftar</Title>
           </Body>
           <TouchableOpacity
             onPress={() => this.props.navigation.navigate('Login')}>
             <Right>
-              <Title style={{ marginBottom: 15 }}>Masuk</Title>
+              <Title style={{ margin: 15, color: '#333' }}>Masuk</Title>
             </Right>
           </TouchableOpacity>
         </Header>
         <ScrollView>
-          <View style={{ marginBottom: 10 }}>
+          <View style={{ margin: 16 }}>
             {this.state.isShowNotification ? (
               <View
                 style={{
@@ -180,7 +185,15 @@ class Daftar extends Component {
             ) : (
               <View style={{ margin: 20 }}></View>
             )}
-            <Form>
+            <Image
+              style={{ alignSelf: 'center' }}
+              source={require('../../assets/img/icon.png')}
+            />
+            <Text style={{ alignSelf: 'center', fontSize: 20 }}>
+              Mitra Omiyago
+            </Text>
+
+            <Form style={{ paddingRight: 16 }}>
               {this.state.isEnterPassword ? (
                 <Item floatingLabel last>
                   <Label>Password</Label>
@@ -267,7 +280,7 @@ class Daftar extends Component {
                 backgroundColor: '#009975',
               }}>
               <Text style={{ color: '#ffffff', fontSize: 17 }}>
-                {this.state.isEnterPassword ? 'Daftar' : 'Lanjutkan'}
+                {this.state.isEnterPassword ? 'Daftar' : 'Lanjut'}
               </Text>
             </Button>
             {this.state.isEnterPassword ? (

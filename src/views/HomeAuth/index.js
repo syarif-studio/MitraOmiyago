@@ -1,7 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, StatusBar, StyleSheet, View } from 'react-native';
 import Login from '../Login';
-import Home from '../Home';
 import { retrieveData } from '../../services/storage';
 
 export default class HomeAuth extends React.Component {
@@ -26,6 +25,7 @@ export default class HomeAuth extends React.Component {
         signedIn: true,
         checkedSignIn: true,
       });
+      this.props.navigation.navigate('BottomNavigation');
     } else {
       this.setState({
         signedIn: false,
@@ -37,7 +37,7 @@ export default class HomeAuth extends React.Component {
   render() {
     const { checkedSignIn, signedIn } = this.state;
 
-    if (!checkedSignIn) {
+    if (!checkedSignIn || signedIn) {
       return (
         <View
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -47,7 +47,6 @@ export default class HomeAuth extends React.Component {
       );
     }
 
-    if (signedIn) return <Home navigation={this.props.navigation} />;
-    else return <Login navigation={this.props.navigation} />;
+    return <Login navigation={this.props.navigation} />;
   }
 }
