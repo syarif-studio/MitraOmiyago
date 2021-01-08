@@ -4,7 +4,7 @@ import config from '../../config';
 
 export default function DisplayPdf() {
   const source = {
-    uri: `http://docs.google.com/gview?url=${config.BROSUR_URL}`,
+    uri: `https://docs.google.com/gview?url=${config.BROSUR_URL}`,
   };
 
   return (
