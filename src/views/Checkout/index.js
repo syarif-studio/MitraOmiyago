@@ -52,10 +52,11 @@ const Checkout = (props) => {
     getUserData();
   }, []);
 
-  const getUserData = async () => {
-    const userData = await retrieveData('userData').catch((error) =>
-      console.log('error: ', error)
-    );
+  React.useEffect(() => {
+    getDiscount();
+  });
+
+  const getDiscount = async () => {
     const userDiscount = await retrieveData(
       `discount-${userData?.userId}`
     ).then((json) => {
@@ -65,12 +66,14 @@ const Checkout = (props) => {
       return json;
     });
 
+    const cart = props.cart;
+    const cartId = cart?.cartId;
+
     if (userData) {
-      const cart = await checkout.getCart(userData.userId);
-      const cartId = cart?.cartId;
       if (cart && userDiscount?.[cartId] !== cart?.cartSubtotal) {
-        mitra.discount(userData.userId).then(() => {
+        mitra.discount(userData.userId).then((resp) => {
           setMitraDiscount(true);
+          handleUpdateCart();
           const newUserDiscount = userDiscount
             ? { ...userDiscount, [cartId]: cart?.cartSubtotal }
             : { [cartId]: cart?.cartSubtotal };
@@ -83,6 +86,16 @@ const Checkout = (props) => {
       } else {
         setMitraDiscount(true);
       }
+    }
+  };
+
+  const getUserData = async () => {
+    const userData = await retrieveData('userData').catch((error) =>
+      console.log('error: ', error)
+    );
+
+    if (userData) {
+      const cart = await checkout.getCart(userData.userId);
 
       props.fetchCart(cart);
 

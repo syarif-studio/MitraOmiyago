@@ -7,7 +7,10 @@ import {
   ScrollView,
   ToastAndroid,
   StyleSheet,
+  Dimensions,
 } from 'react-native';
+
+const windowWidth = Dimensions.get('window').width;
 
 const HomeCategories = (props) => {
   const { data } = props;
@@ -38,8 +41,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   subCategoryIcon: {
-    width: 50,
-    height: 50,
+    width: windowWidth / 7,
+    height: windowWidth / 7,
     margin: 5,
   },
   subCategoryText: {

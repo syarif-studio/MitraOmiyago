@@ -39,6 +39,7 @@ import { connect } from 'react-redux';
 import Kupon from '../views/Kupon';
 import Poin from '../views/Poin';
 import RiwayatPoin from '../views/RiwayatPoin';
+import DisplayPdf from '../views/DisplayPdf';
 
 const HomeStack = createStackNavigator(
   {
@@ -185,6 +186,7 @@ const MainRouter = createStackNavigator(
     ForgotPassword: ForgotPassword,
     Notification: Notification,
     Midtrans: Midtrans,
+    DisplayPdf: DisplayPdf,
     RiwayatPoin: RiwayatPoin,
     Kupon: {
       screen: Kupon,

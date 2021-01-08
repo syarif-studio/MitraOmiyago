@@ -1,37 +1,11 @@
 import React, { Component } from 'react';
 import { Image } from 'react-native';
-import { View, TouchableOpacity, StyleSheet, AsyncStorage } from 'react-native';
-import {
-  Container,
-  Header,
-  Content,
-  Card,
-  CardItem,
-  Thumbnail,
-  Text,
-  Button,
-  Icon,
-  Left,
-  Body,
-  Right,
-  Title,
-  Footer,
-  FooterTab,
-} from 'native-base';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Container, Content, Text, Button, Title } from 'native-base';
 import { removeData, retrieveData } from '../../services/storage';
 import { StackActions, NavigationActions } from 'react-navigation';
 
-var BUTTONS = [
-  { text: 'Beranda', icon: 'home', iconColor: '#2c8ef4' },
-  { text: 'Kategori', icon: 'analytics', iconColor: '#f42ced' },
-  { text: 'Promo', icon: 'gift', iconColor: '#ea943b' },
-  { text: 'Bantuan', icon: 'cog', iconColor: '#ea943b' },
-  { text: 'Logout', icon: 'close', iconColor: '#fa213b' },
-];
-var DESTRUCTIVE_INDEX = 3;
-var CANCEL_INDEX = 4;
-
-export default class CardImageExample extends Component {
+export default class Akun extends Component {
   state = {
     userData: null,
   };
@@ -44,6 +18,10 @@ export default class CardImageExample extends Component {
     });
     this.props.navigation.dispatch(resetAction);
     //this.props.navigation.navigate('Home')
+  };
+
+  downloadPdfHandler = () => {
+    this.props.navigation.navigate('DisplayPdf');
   };
 
   async componentDidMount() {
@@ -167,6 +145,7 @@ export default class CardImageExample extends Component {
           <Button
             bordered
             success
+            onPress={this.downloadPdfHandler}
             style={{
               marginTop: 16,
               borderRadius: 8,
