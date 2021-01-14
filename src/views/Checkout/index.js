@@ -45,7 +45,7 @@ const Checkout = (props) => {
   const [courier, setCourier] = useState(null);
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [point, setPoint] = useState(0);
+  const [isProcessDiscount, setIsProcessDiscount] = useState(false);
   const [mitraDiscount, setMitraDiscount] = useState(null);
 
   React.useEffect(() => {
@@ -56,38 +56,61 @@ const Checkout = (props) => {
     getDiscount();
   });
 
-  const getDiscount = async () => {
-    const userDiscount = await retrieveData(
-      `discount-${userData?.userId}`
-    ).then((json) => {
-      if (typeof json === 'string') {
-        return JSON.parse(json);
-      }
-      return json;
-    });
+  const propsCartTotal = props.cart?.cartTotal;
+  const propsCart = props.cart;
 
-    const cart = props.cart;
-    const cartId = cart?.cartId;
+  const getDiscount = React.useCallback(async () => {
+    const cartTotal =
+      parseInt(propsCart?.cartSubtotal) +
+      parseInt(propsCart?.cartCarrier?.cost ?? 0) -
+      parseInt(propsCart?.cartVoucher?.discount ?? 0);
 
-    if (userData) {
-      if (cart && userDiscount?.[cartId] !== cart?.cartSubtotal) {
-        mitra.discount(userData.userId).then((resp) => {
+    if (
+      !isProcessDiscount &&
+      propsCartTotal &&
+      parseInt(propsCartTotal) === cartTotal
+    ) {
+      setIsProcessDiscount(true);
+      const userDiscount = await retrieveData(
+        `discount-${userData?.userId}`
+      ).then((json) => {
+        if (typeof json === 'string') {
+          return JSON.parse(json);
+        }
+        return json;
+      });
+
+      const cart = propsCart;
+      const cartId = cart?.cartId;
+
+      if (userData) {
+        if (cart && userDiscount?.[cartId] !== cart?.cartSubtotal) {
+          const resp = await mitra.discount(userData.userId);
+          if (resp.respone === 200) {
+            const newUserDiscount = userDiscount
+              ? { ...userDiscount, [cartId]: cart?.cartSubtotal }
+              : { [cartId]: cart?.cartSubtotal };
+
+            await storeData(
+              `discount-${userData?.userId}`,
+              JSON.stringify(newUserDiscount)
+            );
+            setMitraDiscount(true);
+            handleUpdateCart();
+          }
+        } else {
           setMitraDiscount(true);
-          handleUpdateCart();
-          const newUserDiscount = userDiscount
-            ? { ...userDiscount, [cartId]: cart?.cartSubtotal }
-            : { [cartId]: cart?.cartSubtotal };
-
-          return storeData(
-            `discount-${userData?.userId}`,
-            JSON.stringify(newUserDiscount)
-          );
-        });
-      } else {
-        setMitraDiscount(true);
+        }
       }
+      setIsProcessDiscount(false);
     }
-  };
+  }, [
+    propsCartTotal,
+    userData,
+    handleUpdateCart,
+    isProcessDiscount,
+    propsCart,
+  ]);
 
   const getUserData = async () => {
     const userData = await retrieveData('userData').catch((error) =>
@@ -380,11 +403,6 @@ const Checkout = (props) => {
                   </View>
                 )}
               </Card>
-              <UsePoint
-                userData={userData}
-                updateCart={handleUpdateCart}
-                onSetPoint={(value) => setPoint(value)}
-              />
             </View>
 
             <View
@@ -532,6 +550,17 @@ const Checkout = (props) => {
                   }}>
                   <Text style={styles.textSub}>Potongan</Text>
                   <Text style={styles.textSub}>
+                    Rp {priceFormat(props.cart.cartVoucher.discount)}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    marginTop: 10,
+                  }}>
+                  <Text style={styles.textSub}>Komisi</Text>
+                  <Text style={styles.textSub}>
                     {mitraDiscount
                       ? '15%'
                       : cartVoucher.metode === 'percent'
@@ -539,17 +568,6 @@ const Checkout = (props) => {
                       : `Rp ${priceFormat(cartVoucher.discount)}`}
                   </Text>
                 </View>
-                {point > 0 && (
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      marginTop: 10,
-                    }}>
-                    <Text style={styles.textSub}>PotonganPoin</Text>
-                    <Text style={styles.textSub}>Rp -{priceFormat(point)}</Text>
-                  </View>
-                )}
                 <View
                   style={{
                     flexDirection: 'row',
