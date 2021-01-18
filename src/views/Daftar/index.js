@@ -353,7 +353,9 @@ class Daftar extends Component {
                       I have read and agree to the
                     </Text>
                     <Button
-                      transparent
+                      onPress={this.props.navigation.navigate(
+                        'TermsOfServices'
+                      )}
                       info
                       style={{ backgroundColor: 'transparent' }}>
                       <Text style={{ color: 'green' }}> Terms of Service</Text>
