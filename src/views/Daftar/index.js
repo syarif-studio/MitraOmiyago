@@ -8,28 +8,21 @@ import {
   Body,
   Title,
   Icon,
+  CheckBox,
 } from 'native-base';
 import {
+  View,
+  Text,
   ScrollView,
   TouchableOpacity,
   ToastAndroid,
   Image,
 } from 'react-native';
-import { Form, Item, Input, Label, DatePicker } from 'native-base';
+import { Form, Item, Input, Label } from 'native-base';
 import { StackActions, NavigationActions } from 'react-navigation';
-import moment from 'moment';
-
-//import ProductItemCard from '../../components/ProductItemCard';
-//import { connect } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-//import { StyleSheet, FlatList,TouchableWithoutFeedback } from 'react-native';
-// import { faHeart, faComments } from '@fortawesome/free-solid-svg-icons';
-import { faHeart, faComments } from '@fortawesome/free-regular-svg-icons';
-import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
+import DatePicker from 'react-native-datepicker';
 import register from '../../services/register';
-import { storeData } from '../../services/storage';
-
-import { View, Text } from 'react-native';
+import { storeData, retrieveData } from '../../services/storage';
 
 class Daftar extends Component {
   constructor(props) {
@@ -39,13 +32,29 @@ class Daftar extends Component {
         userName: '',
         user: '',
         password: '',
+        dob: null,
+        userPhoto: null,
+        userKTP: null,
       },
+      checked: false,
       isEnterPassword: false,
       isShowNotification: false,
       notification: '',
       isEmail: false,
     };
   }
+
+  componentDidMount = async () => {
+    const userPhoto = await retrieveData('userPhoto');
+    const userKTP = await retrieveData('userKTP');
+    this.setState({ userPhoto, userKTP });
+  };
+
+  refresh = async () => {
+    const userPhoto = await retrieveData('userPhoto');
+    const userKTP = await retrieveData('userKTP');
+    this.setState({ userPhoto, userKTP });
+  };
 
   registerHandler = async () => {
     if (this.state.isEnterPassword) {
@@ -136,6 +145,11 @@ class Daftar extends Component {
     }
   };
 
+  handleToogleChecked = () => {
+    const isChecked = this.state.checked;
+    this.setState({ checked: !isChecked });
+  };
+
   cancelHandler = () => {
     this.setState({
       isEnterPassword: false,
@@ -144,6 +158,14 @@ class Daftar extends Component {
   };
 
   render() {
+    const isDisabled = !(
+      this.state?.userData?.userName &&
+      this.state?.userData?.password &&
+      this.state?.userData?.dob &&
+      this.state?.userData?.userPhoto &&
+      this.state?.userData?.userKTP &&
+      this.state?.checked
+    );
     return (
       <Container>
         <Header style={{ backgroundColor: '#FFF' }}>
@@ -183,7 +205,7 @@ class Daftar extends Component {
                 <Text>{this.state.notification}</Text>
               </View>
             ) : (
-              <View style={{ margin: 20 }}></View>
+              <View style={{ margin: 20 }} />
             )}
             <Image
               style={{ alignSelf: 'center' }}
@@ -242,35 +264,106 @@ class Daftar extends Component {
                       }
                     />
                   </Item>
-                  <View style={{ flexDirection: 'column' }}>
-                    <Label style={{ marginTop: 10, marginLeft: 10 }}>
-                      Tanggal Lahir
-                    </Label>
+                  <View style={{ flexDirection: 'column', marginLeft: 10 }}>
+                    <Label style={{ marginVertical: 16 }}>Tanggal Lahir</Label>
+
                     <DatePicker
-                      defaultDate={new Date(2018, 4, 4)}
-                      minimumDate={new Date(1923, 1, 1)}
-                      maximumDate={new Date(2018, 12, 31)}
-                      locale={'en'}
-                      timeZoneOffsetInMinutes={undefined}
-                      modalTransparent={false}
-                      animationType={'fade'}
-                      androidMode={'default'}
-                      placeHolderText="Select date"
-                      textStyle={{ color: 'green' }}
-                      placeHolderTextStyle={{ color: '#d3d3d3' }}
-                      onDateChange={(dob) => {
-                        dob = moment(dob).format('YYYY-MM-DD');
-                        this.setState({
-                          userData: { ...this.state.userData, dob },
-                        });
+                      style={{ width: 200 }}
+                      date={this.state.dob}
+                      mode="date"
+                      placeholder="select date"
+                      format="YYYY-MM-DD"
+                      minDate="1920-01-01"
+                      maxDate="2021-01-01"
+                      confirmBtnText="Confirm"
+                      cancelBtnText="Cancel"
+                      customStyles={{
+                        dateIcon: {
+                          position: 'absolute',
+                          left: 0,
+                          top: 4,
+                          marginLeft: 0,
+                        },
+                        dateInput: {
+                          marginLeft: 36,
+                        },
+                        // ... You can check the source to find the other keys.
                       }}
-                      disabled={false}
+                      onDateChange={(date) => {
+                        this.setState({ dob: date });
+                      }}
                     />
+                  </View>
+                  <View style={{ flexDirection: 'column', marginLeft: 10 }}>
+                    <Label style={{ marginVertical: 16 }}>Foto Wajah</Label>
+                    {this.state.userPhoto && (
+                      <Image
+                        style={{ width: 100, height: 100, borderRadius: 4 }}
+                        source={this.state.userPhoto}
+                      />
+                    )}
+                    <Button
+                      light
+                      style={{ paddingHorizontal: 16, marginTop: 8 }}
+                      onPress={() =>
+                        this.props.navigation.navigate('Camera', {
+                          type: 'front',
+                          slug: 'userPhoto',
+                          onGoBack: () => this.refresh(),
+                        })
+                      }>
+                      <Text style={{ color: 'white' }}>Ambil Foto</Text>
+                    </Button>
+                  </View>
+                  <View style={{ flexDirection: 'column', marginLeft: 10 }}>
+                    <Label style={{ marginVertical: 16 }}>Foto KTP</Label>
+
+                    {this.state.userKTP && (
+                      <Image
+                        style={{ width: 200, height: 140, borderRadius: 4 }}
+                        source={this.state.userKTP}
+                      />
+                    )}
+
+                    <Button
+                      light
+                      style={{ paddingHorizontal: 16, marginTop: 8 }}
+                      onPress={() =>
+                        this.props.navigation.navigate('Camera', {
+                          type: 'back',
+                          slug: 'userKTP',
+                          onGoBack: () => this.refresh(),
+                        })
+                      }>
+                      <Text style={{ color: 'white' }}>Ambil Foto</Text>
+                    </Button>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginTop: 16,
+                    }}>
+                    <CheckBox
+                      checked={this.state.checked}
+                      onPress={this.handleToogleChecked}
+                      color="green"
+                    />
+                    <Text style={{ marginLeft: 16 }}>
+                      I have read and agree to the
+                    </Text>
+                    <Button
+                      transparent
+                      info
+                      style={{ backgroundColor: 'transparent' }}>
+                      <Text style={{ color: 'green' }}> Terms of Service</Text>
+                    </Button>
                   </View>
                 </>
               )}
             </Form>
             <Button
+              disabled={isDisabled}
               block
               onPress={this.registerHandler}
               style={{

@@ -40,6 +40,7 @@ import Kupon from '../views/Kupon';
 import Poin from '../views/Poin';
 import RiwayatPoin from '../views/RiwayatPoin';
 import DisplayPdf from '../views/DisplayPdf';
+import Camera from '../views/Camera';
 
 const HomeStack = createStackNavigator(
   {
@@ -188,6 +189,7 @@ const MainRouter = createStackNavigator(
     Midtrans: Midtrans,
     DisplayPdf: DisplayPdf,
     RiwayatPoin: RiwayatPoin,
+    Camera: Camera,
     Kupon: {
       screen: Kupon,
       navigationOptions: {

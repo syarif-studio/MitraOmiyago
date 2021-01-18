@@ -95,7 +95,7 @@ export default class HomeBar extends Component {
 const styles = StyleSheet.create({
   wrapper: {
     flexDirection: 'row',
-    backgroundColor: 'transparent',
+    backgroundColor: '#009975',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
