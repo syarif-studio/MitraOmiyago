@@ -1,12 +1,5 @@
 import * as React from 'react';
-import {
-  TouchableOpacity,
-  Text,
-  View,
-  SafeAreaView,
-  Image,
-  Dimensions,
-} from 'react-native';
+import { TouchableOpacity, Text, View, Image, Dimensions } from 'react-native';
 
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 const carouselImages = [
@@ -16,6 +9,7 @@ const carouselImages = [
 ];
 
 const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 export default class Slider extends React.Component {
   constructor(props) {
@@ -33,9 +27,9 @@ export default class Slider extends React.Component {
           height: '100%',
         }}>
         <Image
-          resizeMode="contain"
+          resizeMode="cover"
           source={item}
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: windowWidth, height: windowHeight }}
         />
       </View>
     );
@@ -44,20 +38,6 @@ export default class Slider extends React.Component {
   render() {
     return (
       <View style={{ flex: 1, width: '100%' }}>
-        <View style={{ alignItems: 'flex-end' }}>
-          <TouchableOpacity
-            onPress={() => this.props.handleHideSlider()}
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'transparent',
-              margin: 24,
-            }}>
-            <Text style={{ color: 'green', fontSize: 20, fontWeight: 'bold' }}>
-              Skip
-            </Text>
-          </TouchableOpacity>
-        </View>
         <Carousel
           layout={'default'}
           ref={(ref) => (this.carousel = ref)}
@@ -74,7 +54,7 @@ export default class Slider extends React.Component {
           containerStyle={{
             position: 'absolute',
             backgroundColor: 'transparent',
-            bottom: 32,
+            bottom: 100,
             width: '100%',
             marginHorizontal: 'auto',
           }}
@@ -91,6 +71,29 @@ export default class Slider extends React.Component {
           inactiveDotOpacity={0.4}
           inactiveDotScale={0.6}
         />
+        <View
+          style={{
+            alignItems: 'center',
+            width: '100%',
+            position: 'absolute',
+            bottom: 24,
+          }}>
+          <TouchableOpacity
+            onPress={() => this.props.handleHideSlider()}
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#009975',
+              paddingHorizontal: 100,
+              paddingVertical: 16,
+              borderRadius: 30,
+              margin: 24,
+            }}>
+            <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>
+              Masuk
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
