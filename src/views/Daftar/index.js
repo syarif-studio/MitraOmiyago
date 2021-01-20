@@ -33,9 +33,9 @@ class Daftar extends Component {
         user: '',
         password: '',
         dob: null,
-        userPhoto: null,
-        userKTP: null,
       },
+      userPhoto: null,
+      userKTP: null,
       checked: false,
       isEnterPassword: false,
       isShowNotification: false,
@@ -159,13 +159,13 @@ class Daftar extends Component {
 
   render() {
     const isDisabled = !(
-      this.state?.userData?.userName &&
-      this.state?.userData?.password &&
+      this.state?.userData?.name &&
       this.state?.userData?.dob &&
-      this.state?.userData?.userPhoto &&
-      this.state?.userData?.userKTP &&
+      this.state?.userPhoto &&
+      this.state?.userKTP &&
       this.state?.checked
     );
+
     return (
       <Container>
         <Header style={{ backgroundColor: '#FFF' }}>
@@ -269,7 +269,7 @@ class Daftar extends Component {
 
                     <DatePicker
                       style={{ width: 200 }}
-                      date={this.state.dob}
+                      date={this.state.userData.dob}
                       mode="date"
                       placeholder="select date"
                       format="YYYY-MM-DD"
@@ -290,7 +290,9 @@ class Daftar extends Component {
                         // ... You can check the source to find the other keys.
                       }}
                       onDateChange={(date) => {
-                        this.setState({ dob: date });
+                        this.setState({
+                          userData: { ...this.state.userData, dob: date },
+                        });
                       }}
                     />
                   </View>
