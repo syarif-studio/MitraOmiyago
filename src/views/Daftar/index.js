@@ -17,12 +17,35 @@ import {
   TouchableOpacity,
   ToastAndroid,
   Image,
+  Platform,
 } from 'react-native';
 import { Form, Item, Input, Label } from 'native-base';
 import { StackActions, NavigationActions } from 'react-navigation';
 import DatePicker from 'react-native-datepicker';
 import register from '../../services/register';
 import { storeData, retrieveData } from '../../services/storage';
+
+const appendFormData = ({ foto, ktp }, body) => {
+  const data = new FormData();
+
+  data.append('foto', {
+    name: 'foto.jpg',
+    type: 'image/jpg',
+    uri: Platform.OS === 'android' ? foto.uri : foto.uri.replace('file://', ''),
+  });
+
+  data.append('ktp', {
+    name: 'ktp.jpg',
+    type: 'image/jpg',
+    uri: Platform.OS === 'android' ? ktp.uri : ktp.uri.replace('file://', ''),
+  });
+
+  Object.keys(body).forEach((key) => {
+    data.append(key, body[key]);
+  });
+
+  return data;
+};
 
 class Daftar extends Component {
   constructor(props) {
@@ -44,16 +67,9 @@ class Daftar extends Component {
     };
   }
 
-  componentDidMount = async () => {
-    const userPhoto = await retrieveData('userPhoto');
-    const userKTP = await retrieveData('userKTP');
-    this.setState({ userPhoto, userKTP });
-  };
-
-  refresh = async () => {
-    const userPhoto = await retrieveData('userPhoto');
-    const userKTP = await retrieveData('userKTP');
-    this.setState({ userPhoto, userKTP });
+  getCameraData = async (slug) => {
+    const data = await retrieveData(slug);
+    this.setState({ [slug]: data });
   };
 
   registerHandler = async () => {
@@ -63,10 +79,26 @@ class Daftar extends Component {
       try {
         let res;
 
+        const userData = this.state.userData;
+        let formData = {
+          userName: 'beta',
+          keyCode: 'beta12345',
+          Name: userData.name,
+          Email: userData.email,
+          Password: userData.password,
+          Phone: userData.phone,
+          Dob: userData.dob,
+          mitra: 1,
+        };
+
+        formData = appendFormData(
+          { foto: this.state.userPhoto, ktp: this.state.userKTP },
+          formData
+        );
         if (this.state.isEmail) {
-          res = await register.userRegisterEmail(this.state.userData);
+          res = await register.userRegisterEmail(formData);
         } else {
-          res = await register.userRegisterPonsel(this.state.userData);
+          res = await register.userRegisterPonsel(formData);
         }
 
         userId = res.data.user_id;
@@ -79,15 +111,10 @@ class Daftar extends Component {
               name: res.data.first_name,
             })
           );
-          ToastAndroid.show(
-            'Selamat datang di omiyago, ' + res.data.first_name + '!',
-            ToastAndroid.SHORT
-          );
+          ToastAndroid.show('Menunggu disetujui admin', ToastAndroid.SHORT);
           const resetAction = StackActions.reset({
             index: 0,
-            actions: [
-              NavigationActions.navigate({ routeName: 'BottomNavigation' }),
-            ],
+            actions: [NavigationActions.navigate({ routeName: 'Login' })],
           });
           this.props.navigation.dispatch(resetAction);
         } else {
@@ -301,7 +328,7 @@ class Daftar extends Component {
                     {this.state.userPhoto && (
                       <Image
                         style={{ width: 100, height: 100, borderRadius: 4 }}
-                        source={this.state.userPhoto}
+                        source={{ uri: this.state.userPhoto?.uri }}
                       />
                     )}
                     <Button
@@ -311,7 +338,7 @@ class Daftar extends Component {
                         this.props.navigation.navigate('Camera', {
                           type: 'front',
                           slug: 'userPhoto',
-                          onGoBack: () => this.refresh(),
+                          onGoBack: this.getCameraData,
                         })
                       }>
                       <Text style={{ color: 'white' }}>Ambil Foto</Text>
@@ -323,7 +350,7 @@ class Daftar extends Component {
                     {this.state.userKTP && (
                       <Image
                         style={{ width: 200, height: 140, borderRadius: 4 }}
-                        source={this.state.userKTP}
+                        source={{ uri: this.state.userKTP?.uri }}
                       />
                     )}
 
@@ -334,7 +361,7 @@ class Daftar extends Component {
                         this.props.navigation.navigate('Camera', {
                           type: 'back',
                           slug: 'userKTP',
-                          onGoBack: () => this.refresh(),
+                          onGoBack: this.getCameraData,
                         })
                       }>
                       <Text style={{ color: 'white' }}>Ambil Foto</Text>

@@ -52,7 +52,7 @@ class Camera extends PureComponent {
       const data = await this.camera.takePictureAsync(options);
       await storeData(slug, JSON.stringify({ uri: data.uri }));
 
-      this.props.navigation.state.params.onGoBack();
+      this.props.navigation.state.params.onGoBack(slug);
       this.props.navigation.goBack();
     }
   };

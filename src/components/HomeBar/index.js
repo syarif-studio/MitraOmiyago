@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 3,
-    color: '#333',
+    color: '#FFF',
   },
   searchContainer: {
     paddingHorizontal: 10,
