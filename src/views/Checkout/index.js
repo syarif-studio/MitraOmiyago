@@ -12,22 +12,19 @@ import {
   Content,
   Card,
   CardItem,
-  Thumbnail,
-  Right,
   Input,
   ActionSheet,
   Toast,
 } from 'native-base';
-import { ScrollView, TouchableOpacity, Image } from 'react-native';
+import { ScrollView, Image } from 'react-native';
 import checkout from './../../services/checkout';
 import mitra from './../../services/mitra';
 import Cart from '../../components/Cart';
 import Address from '../../components/Address';
-import UsePoint from '../../components/UsePoint';
 import { connect } from 'react-redux';
 import { retrieveData, storeData } from '../../services/storage';
 import * as actionType from '../../store/actions/action-types';
-import { text } from '@fortawesome/fontawesome-svg-core';
+import PilihBox from '../../components/PilihBox';
 
 const priceFormat = (price) => {
   if (!price) return '0';
@@ -45,8 +42,7 @@ const Checkout = (props) => {
   const [courier, setCourier] = useState(null);
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isProcessDiscount, setIsProcessDiscount] = useState(false);
-  const [mitraDiscount, setMitraDiscount] = useState(null);
+  const isProcessDiscountRef = useRef(false);
 
   React.useEffect(() => {
     getUserData();
@@ -56,66 +52,29 @@ const Checkout = (props) => {
     getDiscount();
   });
 
-  const propsCartTotal = props.cart?.cartTotal;
-  const propsCart = props.cart;
-
+  const cartMitra = props.cart?.cartMitra;
+  const userId = userData?.userId;
   const getDiscount = React.useCallback(async () => {
-    const cartTotal =
-      parseInt(propsCart?.cartSubtotal) +
-      parseInt(propsCart?.cartCarrier?.cost ?? 0) -
-      parseInt(propsCart?.cartVoucher?.discount ?? 0);
-
     if (
-      !isProcessDiscount &&
-      propsCartTotal &&
-      parseInt(propsCartTotal) === cartTotal
+      cartMitra?.status_code &&
+      cartMitra?.discount === 0 &&
+      userId &&
+      !isProcessDiscountRef.current
     ) {
-      setIsProcessDiscount(true);
-      const userDiscount = await retrieveData(
-        `discount-${userData?.userId}`
-      ).then((json) => {
-        if (typeof json === 'string') {
-          return JSON.parse(json);
-        }
-        return json;
-      });
+      isProcessDiscountRef.current = true;
 
-      const cart = propsCart;
-      const cartId = cart?.cartId;
+      const applyDiscount = await mitra.discount(userId);
 
-      if (userData) {
-        if (cart && userDiscount?.[cartId] !== cart?.cartSubtotal) {
-          const resp = await mitra.discount(userData.userId);
-          if (resp.respone === 200) {
-            const newUserDiscount = userDiscount
-              ? { ...userDiscount, [cartId]: cart?.cartSubtotal }
-              : { [cartId]: cart?.cartSubtotal };
-
-            await storeData(
-              `discount-${userData?.userId}`,
-              JSON.stringify(newUserDiscount)
-            );
-            setMitraDiscount(true);
-            handleUpdateCart();
-          }
-        } else {
-          setMitraDiscount(true);
-        }
+      if (applyDiscount?.discount) {
+        handleUpdateCart();
       }
-      setIsProcessDiscount(false);
+
+      isProcessDiscountRef.current = false;
     }
-  }, [
-    propsCartTotal,
-    userData,
-    handleUpdateCart,
-    isProcessDiscount,
-    propsCart,
-  ]);
+  }, [cartMitra, userId, handleUpdateCart]);
 
   const getUserData = async () => {
-    const userData = await retrieveData('userData').catch((error) =>
-      console.log('error: ', error)
-    );
+    const userData = await retrieveData('userData').catch((error) => {});
 
     if (userData) {
       const cart = await checkout.getCart(userData.userId);
@@ -276,10 +235,11 @@ const Checkout = (props) => {
     }
   };
 
-  const handleUpdateCart = async () => {
-    const updateCart = await checkout.getCart(userData.userId);
-    props.fetchCart(updateCart);
-  };
+  const fetchCart = props.fetchCart;
+  const handleUpdateCart = React.useCallback(async () => {
+    const updateCart = await checkout.getCart(userId);
+    fetchCart(updateCart);
+  }, [fetchCart, userId]);
 
   const handleUpdateCouriers = async (id) => {
     let couriers = await checkout.getCourier(userData.userId, id);
@@ -326,7 +286,6 @@ const Checkout = (props) => {
           style={{
             borderBottomColor: '#eaeaea',
             borderBottomWidth: 2,
-            borderBottomStyle: 'solid',
           }}>
           <Left>
             <Button transparent onPress={() => props.navigation.goBack()}>
@@ -460,51 +419,11 @@ const Checkout = (props) => {
                 </Text>
               )}
 
-              <View
-                style={{
-                  ...styles.textBorder,
-                  paddingBottom: 20,
-                  marginBottom: 20,
-                }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  <Text>Pilih Box</Text>
-                  <Button success small>
-                    <Text uppercase={false}>Pilih</Text>
-                  </Button>
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <View
-                    style={{
-                      borderWidth: 1,
-                      borderStyle: 'solid',
-                      borderColor: '#ccc',
-                      padding: 5,
-                      marginRight: 20,
-                    }}>
-                    <Thumbnail
-                      square
-                      style={{ width: 75 }}
-                      source={{
-                        uri:
-                          'https://m.omiyago.com/public/images/box/box_standart.png',
-                      }}
-                    />
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      flex: 1,
-                    }}>
-                    <Text uppercase={false}>Standart</Text>
-                    <Text uppercase={false}>Gratis</Text>
-                  </View>
-                </View>
-              </View>
+              <PilihBox
+                userData={userData}
+                cart={props.cart}
+                updateCart={handleUpdateCart}
+              />
 
               <View
                 style={{
@@ -550,7 +469,11 @@ const Checkout = (props) => {
                   }}>
                   <Text style={styles.textSub}>Potongan</Text>
                   <Text style={styles.textSub}>
-                    Rp {priceFormat(props.cart.cartVoucher.discount)}
+                    {cartVoucher?.metode === 'percent'
+                      ? `${cartVoucher.value}%`
+                      : cartVoucher?.discount
+                      ? `- Rp ${priceFormat(cartVoucher?.discount)}`
+                      : 'Rp 0'}
                   </Text>
                 </View>
                 <View
@@ -561,11 +484,9 @@ const Checkout = (props) => {
                   }}>
                   <Text style={styles.textSub}>Komisi</Text>
                   <Text style={styles.textSub}>
-                    {mitraDiscount
-                      ? '15%'
-                      : cartVoucher.metode === 'percent'
-                      ? `${cartVoucher.value}%`
-                      : `Rp ${priceFormat(cartVoucher.discount)}`}
+                    {cartMitra?.discount
+                      ? `- Rp ${priceFormat(cartMitra?.discount)}`
+                      : '0'}
                   </Text>
                 </View>
                 <View
@@ -575,7 +496,9 @@ const Checkout = (props) => {
                     marginTop: 10,
                   }}>
                   <Text style={styles.textSub}>Box</Text>
-                  <Text style={styles.textSub}>Rp 0</Text>
+                  <Text style={styles.textSub}>
+                    Rp {priceFormat(props.cart?.cartBox?.price) ?? 'Rp 0'}
+                  </Text>
                 </View>
               </View>
 
@@ -666,12 +589,10 @@ const styles = {
   textBorder: {
     borderBottomColor: '#eaeaea',
     borderBottomWidth: 1,
-    borderBottomStyle: 'solid',
   },
   viewBorder: {
     borderBottomColor: '#e6e6e6',
     borderBottomWidth: 4,
-    borderBottomStyle: 'solid',
   },
   buyBorder: {
     borderTopColor: '#e6e6e6',
@@ -686,7 +607,6 @@ const styles = {
     paddingRight: 12,
     borderBottomColor: '#eaeaea',
     borderBottomWidth: 1,
-    borderBottomStyle: 'solid',
     flexDirection: 'row',
     marginBottom: 10,
   },

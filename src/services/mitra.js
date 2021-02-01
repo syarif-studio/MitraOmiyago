@@ -6,5 +6,6 @@ export default {
       userName: 'beta',
       keyCode: 'beta12345',
       userId,
+      mitra: 1,
     }),
 };

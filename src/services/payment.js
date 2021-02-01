@@ -6,6 +6,7 @@ export default {
       userName: 'beta',
       keyCode: 'beta12345',
       paymentId: 0,
+      mitra: 1,
     }),
   processPayment: async (userId, paymentId) =>
     api.post('payment_process', {
@@ -13,6 +14,7 @@ export default {
       keyCode: 'beta12345',
       userId,
       paymentId,
+      mitra: 1,
     }),
   processTransaction: async (userId) =>
     api.post('process_transaction', {

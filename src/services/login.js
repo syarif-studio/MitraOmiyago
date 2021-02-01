@@ -22,18 +22,21 @@ export default {
       id_google: data.id_google,
       email: data.email,
       name: data.name,
+      mitra: 1,
     }),
   resetPassword: async (Account) =>
     api.post('code_reset_password', {
       userName: 'beta',
       keyCode: 'beta12345',
       Account,
+      mitra: 1,
     }),
   checkResetCode: async (Account) =>
     api.post('cek_code_password', {
       userName: 'beta',
       keyCode: 'beta12345',
       Account,
+      mitra: 1,
     }),
   changePassword: async (userId, Password) =>
     api.post('reset_password', {
@@ -41,6 +44,7 @@ export default {
       keyCode: 'beta12345',
       userId,
       Password,
+      mitra: 1,
     }),
   sendOtp: async (ponsel) =>
     api.get(

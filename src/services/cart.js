@@ -6,6 +6,7 @@ export default {
       userName: 'beta',
       keyCode: 'beta12345',
       userId,
+      mitra: 1,
     }),
   addToCart: async (data) =>
     api.post('add_cart', {
@@ -15,6 +16,7 @@ export default {
       productId: data.productId,
       Qty: data.qty,
       variantId: data.variantId,
+      mitra: 1,
     }),
   removeFromCart: async (data) =>
     api.post('remove_cart', {
@@ -22,5 +24,6 @@ export default {
       keyCode: 'beta12345',
       userId: data.userId,
       cartItem: data.cartItem,
+      mitra: 1,
     }),
 };

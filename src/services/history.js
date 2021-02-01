@@ -1,9 +1,11 @@
-import api from './api'
+import api from './api';
 
 export default {
-  getHistory  : async(userId) => api.post('history_transaction',{
+  getHistory: async (userId) =>
+    api.post('history_transaction', {
       userName: 'beta',
       keyCode: 'beta12345',
-      userId
-  }),
-}
+      userId,
+      mitra: 1,
+    }),
+};
