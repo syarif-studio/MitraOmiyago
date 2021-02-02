@@ -16,22 +16,14 @@ import {
   CardItem,
   H2,
 } from 'native-base';
-import {
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  Modal,
-  Image,
-} from 'react-native';
+import { ScrollView, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 
 import { connect } from 'react-redux';
 import * as actionType from '../../store/actions/action-types';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faHeart, faComments } from '@fortawesome/free-regular-svg-icons';
-import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { retrieveData, storeData } from '../../services/storage';
 import payment from '../../services/payment';
+import checkout from '../../services/checkout';
 import { View, Text } from 'react-native';
 
 const priceFormat = (price) => {
@@ -96,6 +88,9 @@ class Payment extends Component {
         total: priceFormat(this.props.cart && this.props.cart.cartTotal),
       });
     }
+
+    const updateCart = await checkout.getCart(this.state.userData.userId);
+    this.props.fetchCart(updateCart);
   };
 
   render() {
