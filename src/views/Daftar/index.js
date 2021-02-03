@@ -104,13 +104,6 @@ class Daftar extends Component {
         userId = res.data.user_id;
 
         if (userId) {
-          await storeData(
-            'userData',
-            JSON.stringify({
-              email: res.data.email,
-              name: res.data.first_name,
-            })
-          );
           ToastAndroid.show('Menunggu disetujui admin', ToastAndroid.SHORT);
           const resetAction = StackActions.reset({
             index: 0,
