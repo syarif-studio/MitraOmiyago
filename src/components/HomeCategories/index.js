@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
     backgroundColor: '#fff',
-    marginRight: 10,
   },
   subCategoryIcon: {
     width: windowWidth / 7,

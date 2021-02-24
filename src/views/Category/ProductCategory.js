@@ -31,10 +31,6 @@ const ITEM_SIZE = 170;
 function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
-//const { datas, navigation } = props;
-//const toDetail = (params) => {
-//navigation.navigate('Detail', { index: params })
-//}
 
 const SORT_MODES = ['price_highest', 'price_lowest'];
 

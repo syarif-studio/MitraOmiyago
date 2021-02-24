@@ -23,6 +23,10 @@ const SearchProduct = (props) => {
   const [isReady, setIsReady] = React.useState(false);
 
   const toDetail = (params) => {
+    const onClose = props.navigation.getParam('onCloseSearch');
+    if (typeof onClose === 'function') {
+      onClose();
+    }
     props.navigation.push('Detail', {
       index: params,
       source: 'searchProducts',
