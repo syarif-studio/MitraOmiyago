@@ -10,12 +10,10 @@ import {
   TouchableOpacity as Button,
 } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import Axios from 'axios';
 import { shuffle } from 'lodash';
 import CategoryHeader from '../../components/CategoryHeader';
 import * as actionType from '../../store/actions/action-types';
 import { connect } from 'react-redux';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -58,7 +56,7 @@ class ProductCategory extends Component {
     this._timeout && clearTimeout(this._timeout);
   }
 
-  fetchProducts() {
+  fetchProducts = () => {
     const catId = this.props.navigation.getParam('catId', null);
     this.setState({ loading: true });
 
@@ -73,7 +71,7 @@ class ProductCategory extends Component {
     } else {
       this.fetchCategoryProduct(catId);
     }
-  }
+  };
 
   handleOpenActionSheet() {
     this.RBSheet.open();
@@ -83,7 +81,7 @@ class ProductCategory extends Component {
     if (response) {
       var cardData = [];
       for (let i = 0; i < response.length; i++) {
-        if (response[i].product.status?.enabled) {
+        if (response[i].product.status?.enabled == '1') {
           var item = {
             id: response[i].product.id,
             title: response[i].product.detail.name,

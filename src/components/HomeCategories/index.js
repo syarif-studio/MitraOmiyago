@@ -4,8 +4,6 @@ import {
   Image,
   Text,
   TouchableOpacity,
-  ScrollView,
-  ToastAndroid,
   StyleSheet,
   Dimensions,
 } from 'react-native';
@@ -15,14 +13,21 @@ const windowWidth = Dimensions.get('window').width;
 const HomeCategories = (props) => {
   const { data } = props;
 
+  const handleOnpress = (cat) => {
+    if (cat.name === 'Flash Sale') {
+      props.navigation.navigate('FlashSale');
+    } else {
+      props.navigation.navigate('ProductCategory', { catId: cat.id });
+    }
+  };
+
   return (
     <>
       {data.map((first) => {
         return (
           <TouchableOpacity
-            style={{ marginRight: 10, alignItems: 'center' }}
             style={styles.subCategory}
-            onPress={() => props.navigation.navigate('FlashSale')}>
+            onPress={() => handleOnpress(first)}>
             <Image style={styles.subCategoryIcon} source={first.image} />
             <View style={{ flexDirection: 'row' }}>
               <Text style={styles.subCategoryText}>{first.name}</Text>
@@ -39,6 +44,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
     backgroundColor: '#fff',
+    marginRight: 10,
   },
   subCategoryIcon: {
     width: windowWidth / 7,
