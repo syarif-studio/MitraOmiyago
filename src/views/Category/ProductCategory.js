@@ -25,6 +25,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import product from '../../services/product';
 import Loading from '../../components/Loading';
+import SearchProduct from '../../components/SearchProduct';
 
 const ITEM_SIZE = 170;
 
@@ -41,11 +42,26 @@ class ProductCategory extends Component {
     loading: false,
     isModalVisible: false,
     sortMode: null,
+    isSearch: false,
+    searchText: '',
+  };
+
+  onSearchProduct = (text) => {
+    this.setState({ isSearch: true });
+    this.setState({ searchText: text });
+  };
+
+  onCloseSearch = () => {
+    this.setState({ isSearch: false });
   };
 
   componentDidMount() {
     this.fetchProducts();
     this.fetchSubCategoryProduct(this.props.navigation.getParam('catId', 0));
+    this.props.navigation.setParams({
+      onSearchProduct: this.onSearchProduct,
+      onCloseSearch: this.onCloseSearch,
+    });
   }
 
   componentWillUnmount() {
@@ -268,6 +284,17 @@ class ProductCategory extends Component {
     }
 
     const { subCategories, loading } = this.state;
+
+    if (this.state.isSearch) {
+      return (
+        <SearchProduct
+          isSearch={this.state.isSearch}
+          text={this.state.searchText}
+          navigation={this.props.navigation}
+          fetchFlashSaleProduct={this.props.fetchFlashSaleProduct}
+        />
+      );
+    }
 
     return (
       <View style={{ flex: 1 }}>
